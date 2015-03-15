@@ -8,7 +8,8 @@ output: html_document
 
 
 ### Loading and preprocessing data
-```{r}
+
+```r
 if (!exists("mydata")) {
   mydata <- read.csv("activity.csv")
 	mydata$date <- as.Date(mydata$date, format = "%Y-%m-%d")
@@ -20,18 +21,32 @@ if (!exists("mydata")) {
 ### What is mean total number of steps taken per day?
 
 ***"Make a histogram of the total number of steps taken each day"***
-```{r}
+
+```r
 day.sums <- tapply(mydata$steps, mydata$date, sum)
 hist(day.sums)
 ```
 
+![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-1.png) 
+
 ***"Calculate and report the mean and median of the total number of steps taken per day"***
-```{r}
+
+```r
 steps.mean <- mean(day.sums, na.rm=TRUE)
 steps.mean
+```
 
+```
+## [1] 10766.19
+```
+
+```r
 steps.median <- median(day.sums, na.rm=TRUE)
 steps.median
+```
+
+```
+## [1] 10765
 ```
 
 
@@ -41,7 +56,8 @@ steps.median
 
 ***"Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)"***
 
-```{r}
+
+```r
 # get average number of steps for all time intervals
 interval.means <- tapply(mydata$steps, mydata$interval, mean, na.rm=TRUE)
 
@@ -51,9 +67,12 @@ intervals <- levels(mydata$interval)
 plot(intervals, interval.means, type="l")
 ```
 
+![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4-1.png) 
+
 ***"Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?"***
 
-```{r}
+
+```r
 # get index for maximum number of steps
 max.index <- which.max(interval.means)
 
@@ -61,26 +80,37 @@ highest.interval <- levels(mydata$interval)[max.index]
 highest.interval
 ```
 
+```
+## [1] "835"
+```
+
 
 ### Imputing missing values
 
 ***"Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)"***
 
-```{r}
+
+```r
 num.missing <- sum(is.na(mydata$steps))
 num.missing
+```
+
+```
+## [1] 2304
 ```
 
 ***"Create a new dataset that is equal to the original dataset but with the missing data filled in."***
 
 I chose to fill in the missing values with the average of the time interval.  First, create a lookup table with the intervals and their means.
 
-```{r}
+
+```r
 interval.table <- data.frame(interval=intervals, means=interval.means)
 ```
 
 Next, create a copy of the data with NAs filled in from the lookup table
-```{r}
+
+```r
 mydata.filled <- mydata
 for (i in seq_along(mydata.filled$steps)) {
   if (is.na(mydata.filled$steps[i])) {
@@ -91,18 +121,33 @@ for (i in seq_along(mydata.filled$steps)) {
 ```
 
 ***"Make a histogram of the total number of steps taken each day"***
-```{r}
+
+```r
 day.sums.filled <- tapply(mydata.filled$steps, mydata.filled$date, sum)
 hist(day.sums.filled)
 ```
 
+![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-9-1.png) 
+
 
 ***"Calculate and report the mean and median total number of steps taken per day."***
-```{r}
+
+```r
 steps.mean.filled <- mean(day.sums.filled)
 steps.mean.filled
+```
+
+```
+## [1] 10766.19
+```
+
+```r
 steps.median.filled <- median(day.sums.filled)
 steps.median.filled
+```
+
+```
+## [1] 10766.19
 ```
 
 
@@ -110,7 +155,8 @@ steps.median.filled
 
 ***"Create a new factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day."***
 
-```{r}
+
+```r
 w <- weekdays(mydata$date) %in% c("Saturday", "Sunday")
 w <- factor(w)
 levels(w) <- c("weekday", "weekend")
